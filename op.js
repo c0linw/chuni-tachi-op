@@ -32,6 +32,7 @@
     const pbsByChartID = new Map();
     let maxOP = 0;
     let playerOP = 0;
+    let chartCount = 0;
 
     const { username, id } = await fetch("/api/v1/users/me")
         .then((r) => r.json())
@@ -45,13 +46,21 @@
         pbsByChartID.set(pb.chartID, pb);
     }
 
-    for (const chart of charts) {
-        //chartsByID.set(chart.chartID, chart);
-        if ((chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes("sun")) {
-            maxOP += calculateMaxOP(chart);
-            playerOP += calculatePlayerOP(chart);
-        }
+    const version = prompt('Select version (e.g. "paradiselost", "newplus", "sun")', "sun");
+    if (version == null) {
+        alert("Please enter a version name");
+        return;
     }
 
-    alert(`Your OP for CHUNITHM SUN is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)`);
+    for (const chart of charts) {
+        //chartsByID.set(chart.chartID, chart);
+        if ((chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version)) {
+            maxOP += calculateMaxOP(chart);
+            playerOP += calculatePlayerOP(chart);
+            chartCount++;
+        }
+    }
+    console.log(`Total chart count: ${chartCount}`);
+
+    alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)`);
 })();
