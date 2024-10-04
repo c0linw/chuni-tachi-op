@@ -53,5 +53,5 @@
         }
     }
 
-    alert(`Your OP for CHUNITHM SUN is ${playerOP}/${maxOP} (${playerOP / maxOP}%)`);
+    alert(`Your OP for CHUNITHM SUN is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)`);
 })();
