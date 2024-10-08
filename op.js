@@ -60,8 +60,10 @@
 
     for (const chart of allCharts) {
         maxOP += calculateMaxOP(chart);
-        playerOP += calculatePlayerOP(chart);
-        playCount++
+        if (pbsByChartID.has(chart.chartID)) {
+            playerOP += calculatePlayerOP(chart);
+            playCount++
+        }
     }
 
     alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)\nCharts played: ${playCount}/${allCharts.length || "0"}`);
