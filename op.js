@@ -34,6 +34,7 @@
     const pbsByChartID = new Map();
     let maxOP = 0;
     let playerOP = 0;
+    let playCount = 0;
 
     const version = prompt('Select version (e.g. "paradiselost", "new", "newplus", "sun")', "sun");
     if (version == null) {
@@ -49,11 +50,10 @@
         .then((r) => r.json())
         .then((r) => r.body);
 
-    const { pbs, songs, pbCharts } = await fetch(`/api/v1/users/${id}/games/chunithm/Single/pbs/all?alg=rating`)
+    const { pbs, songs, charts } = await fetch(`/api/v1/users/${id}/games/chunithm/Single/pbs/all?alg=rating`)
         .then((r) => r.json())
         .then((r) => r.body);
 
-    pbCharts.filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version));
     for (const pb of pbs) {
         pbsByChartID.set(pb.chartID, pb);
     }
@@ -61,7 +61,8 @@
     for (const chart of allCharts) {
         maxOP += calculateMaxOP(chart);
         playerOP += calculatePlayerOP(chart);
+        playCount++
     }
 
-    alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)\nCharts played: ${pbCharts.length || "0"}/${allCharts.length || "0"}`);
+    alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)\nCharts played: ${playCount}/${allCharts.length || "0"}`);
 })();
