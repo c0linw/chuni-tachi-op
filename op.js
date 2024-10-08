@@ -1,3 +1,5 @@
+// javascript:(function(d){if(location.origin=="https://kamai.tachi.ac"){var s=d.createElement("script");s.src="https://raw.githack.com/c0linw/chuni-tachi-op/refs/heads/main/op.js";d.body.append(s);}})(document)
+
 (async () => {
     if (location.origin !== "https://kamai.tachi.ac") {
         return;
@@ -32,35 +34,34 @@
     const pbsByChartID = new Map();
     let maxOP = 0;
     let playerOP = 0;
-    let chartCount = 0;
 
-    const { username, id } = await fetch("/api/v1/users/me")
-        .then((r) => r.json())
-        .then((r) => r.body);
-
-    const { pbs, songs, charts } = await fetch(`/api/v1/users/${id}/games/chunithm/Single/pbs/all?alg=rating`)
-        .then((r) => r.json())
-        .then((r) => r.body);
-
-    for (const pb of pbs) {
-        pbsByChartID.set(pb.chartID, pb);
-    }
-
-    const version = prompt('Select version (e.g. "paradiselost", "newplus", "sun")', "sun");
+    const version = prompt('Select version (e.g. "paradiselost", "new", "newplus", "sun")', "sun");
     if (version == null) {
         alert("Please enter a version name");
         return;
     }
 
-    for (const chart of charts) {
-        //chartsByID.set(chart.chartID, chart);
-        if ((chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version)) {
-            maxOP += calculateMaxOP(chart);
-            playerOP += calculatePlayerOP(chart);
-            chartCount++;
-        }
-    }
-    console.log(`Total chart count: ${chartCount}`);
+    const allCharts = await fetch("https://raw.githubusercontent.com/zkrising/Tachi/refs/heads/main/seeds/collections/charts-chunithm.json")
+        .then((r) => r.json())
+        .then((r) => r.filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version)));
 
-    alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)`);
+    const { username, id } = await fetch("/api/v1/users/me")
+        .then((r) => r.json())
+        .then((r) => r.body);
+
+    const { pbs, songs, pbCharts } = await fetch(`/api/v1/users/${id}/games/chunithm/Single/pbs/all?alg=rating`)
+        .then((r) => r.json())
+        .then((r) => r.body);
+
+    pbCharts.filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version));
+    for (const pb of pbs) {
+        pbsByChartID.set(pb.chartID, pb);
+    }
+
+    for (const chart of allCharts) {
+        maxOP += calculateMaxOP(chart);
+        playerOP += calculatePlayerOP(chart);
+    }
+
+    alert(`Your OP for version "${version}" is ${playerOP.toFixed(4)}/${maxOP} (${(playerOP / maxOP * 100).toFixed(4)}%)\nCharts played: ${pbCharts.length || "0"}/${allCharts.length || "0"}`);
 })();
