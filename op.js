@@ -7,7 +7,7 @@
 
     function calculateMaxOP(chart) {
         let songName = songsByID.get(chart.songID).title
-        let constant = constants.hasOwnProperty(songName) ? constants[songName] : chart.levelNum;
+        let constant = constants.hasOwnProperty(songName) ? constants[songName][chart.difficulty.substring(0, 3)] : chart.levelNum;
         return (constant + 3) * 5;
     }
 
@@ -36,7 +36,7 @@
 
         // adjust play rating if version cc is different from latest cc
         if (constants.hasOwnProperty(songName)) {
-            playRating -= chart.levelNum - constants[songName]
+            playRating -= chart.levelNum - constants[songName][chart.difficulty.substring(0, 3)]
         }
 
         return playRating * 5 + lampBonus + scoreBonus;
@@ -60,22 +60,27 @@
         return;
     }
 
-    const constants = await fetch(ccURLs[version])
-        .then((r) => r.json());
+    const urls = [
+        ccURLs[version],
+        "https://raw.githubusercontent.com/zkrising/Tachi/refs/heads/main/seeds/collections/charts-chunithm.json",
+        "https://raw.githubusercontent.com/zkrising/Tachi/refs/heads/main/seeds/collections/songs-chunithm.json",
+        "/api/v1/users/me"
+    ]
+    const responses = await Promise.all(urls.map((url) => fetch(url).then((r) => r.json())));
 
-    const allCharts = await fetch("https://raw.githubusercontent.com/zkrising/Tachi/refs/heads/main/seeds/collections/charts-chunithm.json")
-        .then((r) => r.json())
-        .then((r) => r.filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version)));
+    const constants = responses[0].map();
 
-    const { username, id } = await fetch("/api/v1/users/me")
-        .then((r) => r.json())
-        .then((r) => r.body);
+    const allCharts = responses[1].filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version));
+
+    const allSongs = responses[2];
+
+    const { username, id } = responses[3].body;
 
     const { pbs, songs, charts } = await fetch(`/api/v1/users/${id}/games/chunithm/Single/pbs/all?alg=rating`)
         .then((r) => r.json())
         .then((r) => r.body);
 
-    for (const song of songs) {
+    for (const song of allSongs) {
         songsByID.set(song.id, song);
     }
 
