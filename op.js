@@ -5,9 +5,12 @@
         return;
     }
 
+
+
     function calculateMaxOP(chart) {
-        let songName = songsByID.get(chart.songID).title
-        let constant = constants.hasOwnProperty(songName) ? constants[songName][chart.difficulty.substring(0, 3)] : chart.levelNum;
+        const songName = songsByID.get(chart.songID).title
+        const diff = chart.difficulty.substring(0, 3);
+        const constant = (constants.hasOwnProperty(songName) && constants[songName].hasOwnProperty(diff)) ? constants[songName][diff] : chart.levelNum;
         return (constant + 3) * 5;
     }
 
@@ -28,16 +31,16 @@
                 lampBonus = 0.5;
                 break;
         }
-        let scoreBonus = pb.scoreData.score > 1007500 ? (pb.scoreData.score - 1007500) * 0.0015 : 0;
+        const scoreBonus = pb.scoreData.score > 1007500 ? (pb.scoreData.score - 1007500) * 0.0015 : 0;
 
-        let songName = songsByID.get(chart.songID).title
+        const songName = songsByID.get(chart.songID).title
 
         let playRating = Math.min(pb.calculatedData.rating, chart.levelNum + 2);
 
         // adjust play rating if version cc is different from latest cc
-        if (constants.hasOwnProperty(songName)) {
-            playRating -= chart.levelNum - constants[songName][chart.difficulty.substring(0, 3)]
-        }
+        const diff = chart.difficulty.substring(0, 3);
+        const constant = (constants.hasOwnProperty(songName) && constants[songName].hasOwnProperty(diff)) ? constants[songName][diff] : chart.levelNum;
+        playRating -= chart.levelNum - constant;
 
         return playRating * 5 + lampBonus + scoreBonus;
     }
