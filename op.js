@@ -68,7 +68,7 @@
     ]
     const responses = await Promise.all(urls.map((url) => fetch(url).then((r) => r.json())));
 
-    const constants = responses[0].map();
+    const constants = responses[0];
 
     const allCharts = responses[1].filter((chart) => (chart.difficulty == "MASTER" || chart.difficulty == "ULTIMA") && chart.versions.includes(version));
 
