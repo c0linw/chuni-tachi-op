@@ -57,7 +57,7 @@
         "sunplus": "https://raw.githubusercontent.com/Dogeon188/chuni-tools/refs/heads/master/docs/data/song-const/sunplus.json",
         "luminous": "https://raw.githubusercontent.com/Dogeon188/chuni-tools/refs/heads/master/docs/data/song-const/luminous.json"
     }
-    const version = prompt('Select version (supported versions: "newplus", "sun", "sunplus", "luminous")', "sun");
+    const version = prompt('Select version (supported versions: "newplus", "sun", "sunplus", "luminous")', "sunplus");
     if (version == null || !ccURLs.hasOwnProperty(version)) {
         alert("Unsupported game version");
         return;
