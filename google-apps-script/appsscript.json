@@ -1,0 +1,23 @@
+{
+    "timeZone": "America/New_York",
+    "dependencies": {},
+    "webapp": {
+        "access": "MYSELF",
+        "executeAs": "USER_DEPLOYING"
+    },
+    "exceptionLogging": "STACKDRIVER",
+    "oauthScopes": [
+        "https://www.googleapis.com/auth/script.container.ui",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/script.scriptapp"
+    ],
+    "runtimeVersion": "V8",
+    "sheets": {
+        "macros": [
+            {
+                "menuName": "autoUpdateLamps",
+                "functionName": "autoUpdateLamps"
+            }
+        ]
+    }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+</head>
+
+<body>
+    <label for="playerName">Player Name:</label>
+    <input type="text" id="playerName" name="playerName" required />
+    <label for="fileInput">Upload player data:</label>
+    <input type="file" id="fileInput" accept=".json">
+    <button onclick="uploadAndParseJSON()">Update lamps</button>
+    <script>
+        function uploadAndParseJSON() {
+            const file = document.getElementById('fileInput').files[0];
+            const playerName = document.getElementById('playerName').value;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const jsonString = e.target.result;
+                const data = JSON.parse(jsonString);
+                google.script.run._processData(playerName, data);
+                // document.getElementById('output'). innerHTML = JSON.stringify(data, null, 2);  
+            };
+            reader.readAsText(file);
+        }  
+    </script>
+</body>
+
+</html>
